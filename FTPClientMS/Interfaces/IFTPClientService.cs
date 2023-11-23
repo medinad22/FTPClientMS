@@ -3,6 +3,7 @@
 
     public interface IFTPClientService
     {
-        Task Download();
+        Task DownloadFiles();
+        Task ListFiles();
     }
 }

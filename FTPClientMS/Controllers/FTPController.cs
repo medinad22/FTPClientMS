@@ -15,12 +15,20 @@ namespace FTPClientMS.Controllers
             _ftpClientService = ftpClientService;
         }
 
-        [HttpPost(Name = "CreateFtp")]
-        public async Task Post()
+        [HttpGet(Name = "ListFiles")]
+        public async Task Get()
         {
-            await _ftpClientService.Download();
+            await _ftpClientService.ListFiles();
 
         }
+
+        [HttpPost(Name = "DownloadFiles")]
+        public async Task Post()
+        {
+            await _ftpClientService.DownloadFiles();
+
+        }
+
     }
 }
 

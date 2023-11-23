@@ -1,11 +1,53 @@
 ﻿using FTPClientMS.Interfaces;
 using FluentFTP;
+using Amazon.S3;
+using Amazon.S3.Model;
+
 namespace FTPClientMS.Services
 {
     public class FTPClientService : IFTPClientService
     {
+        public async Task DownloadFiles()
+        {
+            var token = new CancellationToken();
+            var ftpClient = new AsyncFtpClient("ftp.gnu.org", "anonymous", "", 21);
 
-        public async Task Download()
+            await ftpClient.AutoConnect();
+
+            FtpListItem[] ftpListItems = await ftpClient.GetListing("/gnu/chess/");
+
+            FtpListItem ftpListItem = ftpListItems[0];
+
+            Console.WriteLine(ftpListItem.Name);
+            Console.WriteLine(ftpListItem.FullName);
+            MemoryStream ms = new MemoryStream();
+             await ftpClient.DownloadStream(ms, ftpListItem.FullName);
+            ms.Position = 0;
+
+            StreamReader sr = new StreamReader(ms);
+            
+            string fileContents = await sr.ReadToEndAsync();
+
+            Console.WriteLine(fileContents);
+            var config = new AmazonS3Config()
+            {
+                ServiceURL = "http://s3.localhost.localstack.cloud:4566"
+            };
+            var s3client = new AmazonS3Client(config);
+            var objectRequest = new PutObjectRequest()
+            {
+                BucketName = "my-first-bucket",
+                Key = ftpListItem.Name,
+                InputStream = sr.BaseStream
+            };
+            
+            await s3client.PutObjectAsync(objectRequest);
+            sr.Close();
+            ms.Close();
+
+        }
+
+        public async Task ListFiles()
         {
             var token = new CancellationToken();
             var ftpClient = new AsyncFtpClient("ftp.gnu.org", "anonymous", "", 21);
