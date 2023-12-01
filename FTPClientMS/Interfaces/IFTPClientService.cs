@@ -5,5 +5,7 @@
     {
         Task DownloadFiles();
         Task ListFiles();
+        Task ListFiles2();
+        Task ListFiles3();
     }
 }

@@ -18,7 +18,7 @@ namespace FTPClientMS.Controllers
         [HttpGet(Name = "ListFiles")]
         public async Task Get()
         {
-            await _ftpClientService.ListFiles();
+            await _ftpClientService.ListFiles3();
 
         }
 
